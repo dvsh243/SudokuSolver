@@ -14,11 +14,12 @@ def getRandom(count: int, unique: set) -> set:
 
 
 def getImmutable(sudoku: list[list[int]]) -> set:
+    """returns set of indexes which are immutable in the sudoku"""
     immutable = set()
 
     for r in range(9):
         for c in range(9):
-            if not sudoku[r][c]:
+            if sudoku[r][c] != 0:
                 immutable.add( (r, c) )
     
     return immutable

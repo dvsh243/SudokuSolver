@@ -1,4 +1,5 @@
 import random
+import os, time
 from helpers import getRandom, getImmutable
 
 class SudokuSolver:
@@ -18,37 +19,47 @@ class SudokuSolver:
         print("\n")
 
 
-    @staticmethod
-    def PrintSudoku(sudoku):
-        print("\n")
+    def __repr__(self) -> str:
+        """prints the current sudoku board"""
+        representation = "\n"
 
-        for i in range(len(sudoku)):
+        for i in range(len(self.sudoku)):
             line = ""
             if i == 3 or i == 6:
-                print("---------------------")
-            for j in range(len(sudoku[i])):
+                # print("---------------------")
+                representation += "---------------------\n"
+            for j in range(len(self.sudoku[i])):
                 if j == 3 or j == 6:
                     line += "| "
-                line += str(sudoku[i][j]) + " "
-            print(line)
-            
-        print("\n")
+                line += str(self.sudoku[i][j]) + " "
+            # print(line)
+            representation += line + "\n"
+        
+        return representation
 
 
     def solve(self):
-        self.PrintSudoku(self.sudoku)
-        self.getRandomState()
-        self.PrintSudoku(self.sudoku)
+        print(self)
+        self.RandomInitialize()
+        print(self)
 
+        for _ in range(50):
+            self.randomSwap()
+            print(self)
+            time.sleep(0.1)
+            os.system('clear')
+
+
+##########################################################################
+##########################################################################
     
-    def getRandomState(self):
+    def RandomInitialize(self):
         
         # `x` & `y` are block indexes.
         for x in range(3):
             for y in range(3):
                 self.fillBlock(x, y)
         
-
 
     def fillBlock(self, x: int, y: int):
         """ranges --- r -> [{x*3}, {x*3+2}]    c -> [{y*3}, {y*3+2}]"""
@@ -62,11 +73,8 @@ class SudokuSolver:
                     continue
                 unique.add( self.sudoku[r][c] )
 
-        # print(f"unique -> {unique} | toFill = {toFill}")
         # choosing `toFill` random numbers from [1, 9] that don't exist in `unique`
-        
         randomNumbers = getRandom(toFill, unique)
-        # print(f"recieved randoms -> { randomNumbers }")
 
         # now filling block with `randomNumbers` sequentially
         for r in range(x*3, x*3+3):
@@ -75,6 +83,30 @@ class SudokuSolver:
                     self.sudoku[r][c] = randomNumbers.pop()
         
         # print(f"block[{x}][{y}] filled.")
+
+
+##########################################################################
+##########################################################################
+                    
+    def randomSwap(self):
+        """create a new random state for the sudoku 
+        by selecting a random block and swapping 2 elements in that block"""
+
+        # block ID
+        x, y = random.randint(0, 2), random.randint(0, 2)
+    
+        # getting the immutable indexes for this block
+        swapCandidates = []
+        for r in range(x*3, x*3+3):
+            for c in range(y*3, y*3+3):
+                if (r, c) not in self.immutable:
+                    swapCandidates.append( (r, c) )
+        
+        # choosing two swap candidates at random
+        s1, s2 = random.choice(swapCandidates), random.choice(swapCandidates)        
+        self.sudoku[s1[0]][s1[1]], self.sudoku[s2[0]][s2[1]] = self.sudoku[s2[0]][s2[1]], self.sudoku[s1[0]][s1[1]]
+        print(f"swapped.")
+                    
 
 
 
