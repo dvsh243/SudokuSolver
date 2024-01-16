@@ -1,4 +1,5 @@
 import random
+from helpers import getRandom, getImmutable
 
 class SudokuSolver:
 
@@ -8,6 +9,9 @@ class SudokuSolver:
             [int(i) for i in line] 
             for line in startingSudoku.split()
         ]
+
+        # set of all the indexes that cannot be changed / are fixed
+        self.immutable = getImmutable(self.sudoku)
         
         self.solve()
 
@@ -32,9 +36,9 @@ class SudokuSolver:
 
 
     def solve(self):
-
         self.PrintSudoku(self.sudoku)
         self.getRandomState()
+        self.PrintSudoku(self.sudoku)
 
     
     def getRandomState(self):
@@ -42,9 +46,8 @@ class SudokuSolver:
         # `x` & `y` are block indexes.
         for x in range(3):
             for y in range(3):
-                print(f"filling block[{x}][{y}]...")
                 self.fillBlock(x, y)
-                return
+        
 
 
     def fillBlock(self, x: int, y: int):
@@ -59,23 +62,20 @@ class SudokuSolver:
                     continue
                 unique.add( self.sudoku[r][c] )
 
-        print(f"unique -> {unique} | toFill = {toFill}")
+        # print(f"unique -> {unique} | toFill = {toFill}")
         # choosing `toFill` random numbers from [1, 9] that don't exist in `unique`
-        print(f"recieved randoms -> { self.getRandom(toFill, unique) }")
-
-
-    @staticmethod
-    def getRandom(count: int, unique: set) -> set:
-        """returns `count` random numbers from [1, 9] that dont exist in `unique`"""
         
-        numbers = []
-        while len(unique) < 9:
-            n = random.randint(1, 9)
-            if n not in unique: 
-                numbers.append(n)
-                unique.add(n)
+        randomNumbers = getRandom(toFill, unique)
+        # print(f"recieved randoms -> { randomNumbers }")
+
+        # now filling block with `randomNumbers` sequentially
+        for r in range(x*3, x*3+3):
+            for c in range(y*3, y*3+3):
+                if not self.sudoku[r][c]:
+                    self.sudoku[r][c] = randomNumbers.pop()
         
-        return numbers
+        # print(f"block[{x}][{y}] filled.")
+
 
 
 if __name__ == "__main__":
