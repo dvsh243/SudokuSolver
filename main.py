@@ -18,6 +18,18 @@ class SudokuSolver:
 
         print("\n")
 
+    
+    def solve(self):
+        print(self)
+        self.RandomInitialize()
+        print(self)
+
+        for _ in range(50):
+            self.randomSwap()
+            print(self)
+            print(f"error -> {self.calculateError()}")
+            time.sleep(0.1); os.system('clear')
+
 
     def __repr__(self) -> str:
         """prints the current sudoku board"""
@@ -36,18 +48,6 @@ class SudokuSolver:
             representation += line + "\n"
         
         return representation
-
-
-    def solve(self):
-        print(self)
-        self.RandomInitialize()
-        print(self)
-
-        for _ in range(50):
-            self.randomSwap()
-            print(self)
-            time.sleep(0.1)
-            os.system('clear')
 
 
 ##########################################################################
@@ -106,8 +106,31 @@ class SudokuSolver:
         s1, s2 = random.choice(swapCandidates), random.choice(swapCandidates)        
         self.sudoku[s1[0]][s1[1]], self.sudoku[s2[0]][s2[1]] = self.sudoku[s2[0]][s2[1]], self.sudoku[s1[0]][s1[1]]
         print(f"swapped.")
-                    
+    
 
+    def calculateError(self) -> int:
+        """number of duplicated by row & by column"""
+        cost = 0
+        
+        # row wise iteration
+        for r in range(9):
+            unique = set()
+
+            for c in range(9):
+                if self.sudoku[r][c] in unique:
+                    cost += 1
+                unique.add( self.sudoku[r][c] )
+
+        # column wise iteration
+        for c in range(9):
+            unique = set()
+
+            for r in range(9):
+                if self.sudoku[r][c] in unique:
+                    cost += 1
+                unique.add( self.sudoku[r][c] )
+        
+        return cost
 
 
 if __name__ == "__main__":
