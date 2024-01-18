@@ -40,5 +40,6 @@ def getCopy(sudoku: list[list[int]]) -> list[list[int]]:
 
 
 def acceptState(curTemp: float):
+    """return `True` if `n` lies between [0, curTemp]"""
     n = random.random()
     return n < curTemp

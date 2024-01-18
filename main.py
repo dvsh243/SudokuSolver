@@ -15,35 +15,44 @@ class SudokuSolver:
         self.immutable = getImmutable(self.sudoku)
         print(f"SudokuSolver class initialized.")
 
+        self.errorList = []
         self.simulatedAnnealing()
+
 
         print("\n")
 
 
-    def simulatedAnnealing(self, stopTemp: float = 0.003, decay: float = 0.995):
+    def simulatedAnnealing(self, stopTemp: float = 0.001, decay: float = 0.9998):
         print(self)
         self.RandomInitialize()
         print("intialized random state...")
         print(self)
 
         curTemp = 1
+        iteration = 0
 
         while curTemp > stopTemp:
 
             tempState = self.randomSwap()  # temporary state that holds a copy of the sudoku
-            print(self)
 
-            if (
-                self.calculateError(self.sudoku) > self.calculateError(tempState) and 
-                acceptState(curTemp)
-            ):
+            # if the `tempState` is better than the current state, accept it irrespective of `acceptState()`
+            if self.calculateError(tempState) < self.calculateError(self.sudoku):
                 self.sudoku = tempState
 
-            print(f"curTemp = {curTemp}")
-            print(f"error -> {self.calculateError(self.sudoku)}")
+            # accept a bad state if the `curTemp` is high enough
+            elif acceptState(curTemp):
+                self.sudoku = tempState
+            
+            if iteration % 500 == 0:
+                print(f"iteration: {iteration}")
+                print(self)
+                print(f"curTemp = {curTemp}")
+                print(f"error -> {self.calculateError(self.sudoku)}")
+                time.sleep(0.04)
+                os.system('clear')
 
-            os.system('clear')
             curTemp = curTemp * decay
+            iteration += 1
         
 
         print(self)
