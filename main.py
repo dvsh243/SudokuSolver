@@ -1,6 +1,6 @@
 import random
 import os, time
-from helpers import getRandom, getImmutable
+from helpers import getRandom, getImmutable, getCopy, acceptState
 
 class SudokuSolver:
 
@@ -19,35 +19,36 @@ class SudokuSolver:
 
         print("\n")
 
-    '''
-    def solve(self):
-        print(self)
-        self.RandomInitialize()
-        print(self)
 
-        for _ in range(50):
-            self.randomSwap()
-            print(self)
-            print(f"error -> {self.calculateError()}")
-            time.sleep(0.1); os.system('clear')'''
-    
-
-    def simulatedAnnealing(self):
+    def simulatedAnnealing(self, stopTemp: float = 0.003, decay: float = 0.995):
         print(self)
         self.RandomInitialize()
         print("intialized random state...")
         print(self)
 
         curTemp = 1
-        stopTemp = 0.01
-        decay = 0.95
 
         while curTemp > stopTemp:
-            curTemp = curTemp * decay
+
+            tempState = self.randomSwap()  # temporary state that holds a copy of the sudoku
+            print(self)
+
+            if (
+                self.calculateError(self.sudoku) > self.calculateError(tempState) and 
+                acceptState(curTemp)
+            ):
+                self.sudoku = tempState
+
             print(f"curTemp = {curTemp}")
-            time.sleep(0.1); os.system('clear')
+            print(f"error -> {self.calculateError(self.sudoku)}")
 
+            os.system('clear')
+            curTemp = curTemp * decay
+        
 
+        print(self)
+        print(f"error -> {self.calculateError(self.sudoku)}")
+    
     def __repr__(self) -> str:
         """prints the current sudoku board"""
         representation = "\n"
@@ -105,10 +106,11 @@ class SudokuSolver:
 ##########################################################################
 ##########################################################################
                     
-    def randomSwap(self):
+    def randomSwap(self) -> list[list[int]]:
         """create a new random state for the sudoku 
         by selecting a random block and swapping 2 elements in that block"""
 
+        tempSudoku = getCopy(self.sudoku)
         # block ID
         x, y = random.randint(0, 2), random.randint(0, 2)
     
@@ -121,11 +123,13 @@ class SudokuSolver:
         
         # choosing two swap candidates at random
         s1, s2 = random.choice(swapCandidates), random.choice(swapCandidates)        
-        self.sudoku[s1[0]][s1[1]], self.sudoku[s2[0]][s2[1]] = self.sudoku[s2[0]][s2[1]], self.sudoku[s1[0]][s1[1]]
-        print(f"swapped.")
+        tempSudoku[s1[0]][s1[1]], tempSudoku[s2[0]][s2[1]] = tempSudoku[s2[0]][s2[1]], tempSudoku[s1[0]][s1[1]]
+        # print(f"swapped.")
+
+        return tempSudoku
     
 
-    def calculateError(self) -> int:
+    def calculateError(self, sudoku: list[list[int]]) -> int:
         """number of duplicated by row & by column"""
         cost = 0
         
@@ -134,18 +138,18 @@ class SudokuSolver:
             unique = set()
 
             for c in range(9):
-                if self.sudoku[r][c] in unique:
+                if sudoku[r][c] in unique:
                     cost += 1
-                unique.add( self.sudoku[r][c] )
+                unique.add( sudoku[r][c] )
 
         # column wise iteration
         for c in range(9):
             unique = set()
 
             for r in range(9):
-                if self.sudoku[r][c] in unique:
+                if sudoku[r][c] in unique:
                     cost += 1
-                unique.add( self.sudoku[r][c] )
+                unique.add( sudoku[r][c] )
         
         return cost
 

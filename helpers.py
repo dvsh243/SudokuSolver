@@ -24,3 +24,21 @@ def getImmutable(sudoku: list[list[int]]) -> set:
                 immutable.add( (r, c) )
     
     return immutable
+
+
+def getCopy(sudoku: list[list[int]]) -> list[list[int]]:
+    tempSudoku  = [
+        [None for c in range(9)]
+        for r in range(9)
+    ]
+
+    for r in range(9):
+        for c in range(9):
+            tempSudoku[r][c] = sudoku[r][c]
+    
+    return tempSudoku
+
+
+def acceptState(curTemp: float):
+    n = random.random()
+    return n < curTemp
