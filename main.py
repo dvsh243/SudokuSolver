@@ -13,12 +13,13 @@ class SudokuSolver:
 
         # set of all the indexes that cannot be changed / are fixed
         self.immutable = getImmutable(self.sudoku)
-        
-        self.solve()
+        print(f"SudokuSolver class initialized.")
+
+        self.simulatedAnnealing()
 
         print("\n")
 
-    
+    '''
     def solve(self):
         print(self)
         self.RandomInitialize()
@@ -28,6 +29,22 @@ class SudokuSolver:
             self.randomSwap()
             print(self)
             print(f"error -> {self.calculateError()}")
+            time.sleep(0.1); os.system('clear')'''
+    
+
+    def simulatedAnnealing(self):
+        print(self)
+        self.RandomInitialize()
+        print("intialized random state...")
+        print(self)
+
+        curTemp = 1
+        stopTemp = 0.01
+        decay = 0.95
+
+        while curTemp > stopTemp:
+            curTemp = curTemp * decay
+            print(f"curTemp = {curTemp}")
             time.sleep(0.1); os.system('clear')
 
 
