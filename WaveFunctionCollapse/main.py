@@ -29,7 +29,8 @@ class SudokuSolver:
             print(self)
             print(self.superObj)
             print(f"error -> {calculateError(self.sudoku)}")
-            time.sleep(0.5); os.system('clear')
+            time.sleep(0.1); os.system('clear')
+        print(f"final solution :- {self}")
 
     
     def solveLowestEntropy(self):
