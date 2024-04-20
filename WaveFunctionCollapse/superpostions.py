@@ -70,10 +70,15 @@ class SuperPositions:
             self.superpositions[i][c] = self.superpositions[i][c] ^ (1 << (sudoku[r][c] - 1))
         
         # remove `sudoku[r][c]` from superpositions of each node in the sudoku block to which [r][c] belongs
-        
+        x, y = r // 3, c // 3  # (x, y) -> sudoku block coordinates
+        for i in range(x*3, x*3+3):
+            for j in range(y*3, y*3+3):
+                if (r, c) == (i, j): continue
+                if self.superpositions[i][j] & (1 << (sudoku[r][c] - 1)) == 0: continue  # ignore if its not in the superpositions of [i][j]
+                self.superpositions[i][j] = self.superpositions[i][j] ^ (1 << (sudoku[r][c] - 1))
 
     
-    def getLowestEntropyIndex(self) -> tuple:
+    def getLowestEntropyIndex(self, immutable: set) -> tuple | None:
         """
         return the sudoku position with the lowest entropy
         the lowest number of superpositions have the lowest entropy
@@ -83,11 +88,13 @@ class SuperPositions:
 
         for r in range(9):
             for c in range(9):
+                if (r, c) in immutable: continue
                 # print(f"{(r, c)} -> {BitMask.get1BitIndexes(self.superpositions[r][c])} -> {BitMask.getEntropy(self.superpositions[r][c])}")
-                if BitMask.getEntropy(self.superpositions[r][c]) != 1 and BitMask.getEntropy(self.superpositions[r][c]) < entropy:
+                if BitMask.getEntropy(self.superpositions[r][c]) < entropy:
                     candidate = (r, c)
                     entropy = BitMask.getEntropy(self.superpositions[r][c])
 
+        if not candidate: return None
         return candidate, BitMask.get1BitIndexes(self.superpositions[candidate[0]][candidate[1]], asarray=True)
             
 

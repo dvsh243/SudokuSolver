@@ -1,6 +1,6 @@
 import random
 import os, time
-from helpers import getImmutable
+from helpers import getImmutable, calculateError
 from superpostions import SuperPositions
 
 
@@ -22,13 +22,20 @@ class SudokuSolver:
         self.superObj = SuperPositions()
         self.superObj.initSuperpositions(self.sudoku, self.immutable)
 
-        self.solveLowestEntropy()
+        print(self.superObj)
+
+        while self.superObj.getLowestEntropyIndex(self.immutable):
+            self.solveLowestEntropy()
+            print(self)
+            print(self.superObj)
+            print(f"error -> {calculateError(self.sudoku)}")
+            time.sleep(0.5); os.system('clear')
 
     
     def solveLowestEntropy(self):
         """gets the lowest entropy superpositions from the matrix and collapses its wave function"""
 
-        (r, c), superpositions = self.superObj.getLowestEntropyIndex()
+        (r, c), superpositions = self.superObj.getLowestEntropyIndex(self.immutable)
         # print(r, c, superpositions)
 
         # collapse the superpositions of `sudoku[r][c]`
@@ -36,8 +43,9 @@ class SudokuSolver:
         # print(f"candidate selected -> {candidate}")
 
         self.sudoku[r][c] = candidate
-        self.superObj.updateSuperpositions(self.sudoku, r, c)
+        self.immutable.add( (r, c) )
 
+        self.superObj.updateSuperpositions(self.sudoku, r, c)
 
 
     def __repr__(self) -> str:
