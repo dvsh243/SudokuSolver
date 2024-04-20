@@ -1,6 +1,7 @@
 import random
 import os, time
 from helpers import getImmutable
+from superpostions import SuperPositions
 
 
 class SudokuSolver:
@@ -18,15 +19,25 @@ class SudokuSolver:
 
         print(self)
 
+        self.superObj = SuperPositions()
+        self.superObj.initSuperpositions(self.sudoku, self.immutable)
 
-    def updateSuperpositions():
-        return
+        self.solveLowestEntropy()
 
-    def getSuperpositions():
-        return
+    
+    def solveLowestEntropy(self):
+        """gets the lowest entropy superpositions from the matrix and collapses its wave function"""
 
-    def propagateEffect():
-        return
+        (r, c), superpositions = self.superObj.getLowestEntropyIndex()
+        # print(r, c, superpositions)
+
+        # collapse the superpositions of `sudoku[r][c]`
+        candidate = random.choice(superpositions)  # this is the new candidate from the collapsed superpositions
+        # print(f"candidate selected -> {candidate}")
+
+        self.sudoku[r][c] = candidate
+        self.superObj.updateSuperpositions(self.sudoku, r, c)
+
 
 
     def __repr__(self) -> str:
