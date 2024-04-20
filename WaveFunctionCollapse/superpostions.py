@@ -11,7 +11,7 @@ class BitMask:
             index += 1
         
         if asarray: return res
-        # return '[' + ",".join( [str(x) for x in res] ) + ']'
+        # return '[' + ",".join( [str(x) for x in res] ) + ']'  # uncomment to show array of superpositions
 
         binary = ['0', '0', '0', '0', '0', '0', '0', '0', '0']
         for i in res: binary[i-1] = '1'
