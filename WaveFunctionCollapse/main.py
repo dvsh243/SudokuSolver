@@ -29,7 +29,9 @@ class SudokuSolver:
             print(self)
             print(self.superObj)
             print(f"error -> {calculateError(self.sudoku)}")
-            time.sleep(0.1); os.system('clear')
+            # time.sleep(0.1); os.system('clear')
+            input(); os.system('clear')
+
         print(f"final solution :- {self}")
 
     
@@ -39,12 +41,12 @@ class SudokuSolver:
         (r, c), superpositions = self.superObj.getLowestEntropyIndex(self.immutable)
         # print(r, c, superpositions)
 
-        # collapse the superpositions of `sudoku[r][c]`
+        # collapse the wave function of `sudoku[r][c]`
         candidate = random.choice(superpositions)  # this is the new candidate from the collapsed superpositions
         # print(f"candidate selected -> {candidate}")
 
         self.sudoku[r][c] = candidate
-        self.immutable.add( (r, c) )
+        self.immutable.add( (r, c) )  # not it wont be considered in next entropy calculation
 
         self.superObj.updateSuperpositions(self.sudoku, r, c)
 
